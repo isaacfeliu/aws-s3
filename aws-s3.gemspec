@@ -1,3 +1,4 @@
+require 'lib/aws/s3'
 Gem::Specification.new do |s|
   s.name              = 'aws-s3'
   s.version           = Gem::Version.new(AWS::S3::Version)
@@ -9,9 +10,9 @@ Gem::Specification.new do |s|
   s.extra_rdoc_files  = %w(README COPYING INSTALL)
   s.homepage          = 'http://amazon.rubyforge.org'
   s.rubyforge_project = 'amazon'
-  s.files             = FileList['Rakefile', 'lib/**/*.rb', 'bin/*', 'support/**/*.rb']
+  s.files             = ['Rakefile', 'lib/aws/s3.rb', 'lib/aws/s3/acl.rb', 'lib/aws/s3/authentication.rb', 'lib/aws/s3/base.rb', 'lib/aws/s3/bittorrent.rb', 'lib/aws/s3/bucket.rb', 'lib/aws/s3/connection.rb', 'lib/aws/s3/error.rb', 'lib/aws/s3/exceptions.rb', 'lib/aws/s3/extensions.rb', 'lib/aws/s3/logging.rb', 'lib/aws/s3/object.rb', 'lib/aws/s3/owner.rb', 'lib/aws/s3/parsing.rb', 'lib/aws/s3/response.rb', 'lib/aws/s3/service.rb', 'lib/aws/s3/version.rb', 'bin/setup.rb', 'bin/s3sh']
   s.executables       << 's3sh'
-  s.test_files        = Dir['test/**/*']
+  s.test_files        = ['test/acl_test.rb', 'test/authentication_test.rb', 'test/base_test.rb', 'test/bucket_test.rb', 'test/connection_test.rb', 'test/error_test.rb', 'test/extensions_test.rb', 'test/fixtures.rb', 'test/logging_test.rb', 'test/object_test.rb', 'test/parsing_test.rb', 'test/response_test.rb', 'test/service_test.rb', 'test/test_helper.rb']
   
   s.add_dependency 'xml-simple'
   s.add_dependency 'builder'
@@ -20,3 +21,5 @@ Gem::Specification.new do |s|
                      '--main',  'README',
                      '--line-numbers', '--inline-source']
 end
+
+
