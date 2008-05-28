@@ -1,3 +1,6 @@
+This Fork is to provide support to European Buckets of Amazon S3, which changes concepts like the "Host" header (from s3.amazonaws.com to bucket_name.amazonaws.com)
+With this fork, you can connect to US Buckets as well as EU Buckets.
+
 = AWS::S3
 
 AWS::S3 is a Ruby library for Amazon's Simple Storage Service's REST API (http://aws.amazon.com/s3).
