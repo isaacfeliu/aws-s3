@@ -31,6 +31,7 @@ module AWS
           request = request_method(verb).new(path, headers)
           ensure_content_type!(request)
           add_user_agent!(request)
+          set_host!(request)
           authenticate!(request)
           if body
             if body.respond_to?(:read)                                                                
@@ -67,7 +68,8 @@ module AWS
       end
       
       def subdomain
-        http.address[/^([^.]+).#{DEFAULT_HOST}$/, 1]
+        subdomain = http.address.gsub("#{DEFAULT_HOST}", "").gsub(/.$/,'')
+        subdomain.empty? ? nil : subdomain
       end
       
       def persistent?
@@ -123,6 +125,10 @@ module AWS
         
         def add_user_agent!(request)
           request['User-Agent'] ||= "AWS::S3/#{Version}"
+        end
+        
+        def set_host!(request)
+          request['Host'] = http.address
         end
         
         def query_string_authentication(request, options = {})

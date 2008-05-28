@@ -156,7 +156,9 @@ module AWS
             def typecast_time(datetime) #:nodoc:
               month = datetime[/[a-z]+/i]
               datetime.sub!(%r|^(\w{2})/(\w{3})|, '\2/\1')
-              datetime.sub!(month, Date::ABBR_MONTHS[month.downcase].to_s)
+              if Date.constants.include?('ABBR_MONTHS')
+                datetime.sub!(month, Date::ABBR_MONTHS[month.downcase].to_s) 
+              end
               datetime.sub!(':', ' ')
               Time.parse(datetime)
             end

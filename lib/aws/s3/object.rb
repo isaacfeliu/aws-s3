@@ -295,7 +295,7 @@ module AWS
             options.replace(bucket)
             bucket = nil
           end
-          '/' << File.join(bucket_name(bucket), name)
+          "/#{name}"
         end
     
         private

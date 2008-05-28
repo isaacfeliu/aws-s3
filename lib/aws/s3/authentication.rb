@@ -153,7 +153,7 @@ module AWS
           # "For non-authenticated or anonymous requests. A NotImplemented error result code will be returned if 
           # an authenticated (signed) request specifies a Host: header other than 's3.amazonaws.com'"
           # (from http://docs.amazonwebservices.com/AmazonS3/2006-03-01/VirtualHosting.html)
-          request['Host'] = DEFAULT_HOST
+          request['Host'] ||= DEFAULT_HOST
           build
         end
     
@@ -210,7 +210,7 @@ module AWS
           end
           
           def only_path
-            request.path[/^[^?]*/]
+            ("/" + request['Host'].gsub("#{DEFAULT_HOST}","").gsub(/\.$/,'') + request.path[/^[^?]*/]).gsub("//","/")
           end
       end
     end
