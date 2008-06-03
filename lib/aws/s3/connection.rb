@@ -23,7 +23,7 @@ module AWS
         connect
       end
           
-      def request(verb, path, headers = {}, body = nil, attempts = 0, &block)
+      def request(verb, path, headers = {}, body = nil, attempts = 0, current_host = nil, &block)
         body.rewind if body.respond_to?(:rewind) unless attempts.zero?      
         
         requester = Proc.new do 
@@ -31,8 +31,8 @@ module AWS
           request = request_method(verb).new(path, headers)
           ensure_content_type!(request)
           add_user_agent!(request)
-          set_host!(request)
-          authenticate!(request)
+          set_host!(request, current_host)
+          authenticate!(request, current_host)
           if body
             if body.respond_to?(:read)                                                                
               request.body_stream    = body                                                           
@@ -41,6 +41,7 @@ module AWS
               request.body = body                                                                     
             end                                                                                       
           end
+
           http.request(request, &block)
         end
         
@@ -119,16 +120,16 @@ module AWS
         end
         
         # Just do Header authentication for now
-        def authenticate!(request)
-          request['Authorization'] = Authentication::Header.new(request, access_key_id, secret_access_key)
+        def authenticate!(request, current_host)
+          request['Authorization'] = Authentication::Header.new(request, access_key_id, secret_access_key, current_host)
         end
         
         def add_user_agent!(request)
           request['User-Agent'] ||= "AWS::S3/#{Version}"
         end
         
-        def set_host!(request)
-          request['Host'] = http.address
+        def set_host!(request, host)
+          request['Host'] = (host && http.address.match(host)) ? http.address : host.nil? ? http.address : host.match(/amazonaws.com/) ? host : "#{host}.#{http.address}"
         end
         
         def query_string_authentication(request, options = {})

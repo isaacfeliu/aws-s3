@@ -50,11 +50,11 @@ module AWS
       # parameterize these computations and arrange them in a string form appropriate to how they are used, in one case a http request
       # header value, and in the other case key/value query string parameter pairs.
       class Signature < String #:nodoc:
-        attr_reader :request, :access_key_id, :secret_access_key
+        attr_reader :request, :access_key_id, :secret_access_key, :current_host
   
-        def initialize(request, access_key_id, secret_access_key, options = {})
+        def initialize(request, access_key_id, secret_access_key, current_host = nil, options = {})
           super()
-          @request, @access_key_id, @secret_access_key = request, access_key_id, secret_access_key
+          @request, @access_key_id, @secret_access_key, @current_host = request, access_key_id, secret_access_key, current_host
           @options = options
         end
   
@@ -63,7 +63,7 @@ module AWS
           def canonical_string            
             options = {}
             options[:expires] = expires if expires?
-            CanonicalString.new(request, options)
+            CanonicalString.new(request, current_host, options)
           end
           memoized :canonical_string
     
@@ -135,7 +135,7 @@ module AWS
           end
 
           def interesting_headers
-            ['content-md5', 'content-type', 'date', amazon_header_prefix]
+            ['content-md5', 'content-type', 'date', 'Host', amazon_header_prefix]
           end
           
           def amazon_header_prefix
@@ -143,11 +143,12 @@ module AWS
           end
         end
         
-        attr_reader :request, :headers
+        attr_reader :request, :headers, :current_host
         
-        def initialize(request, options = {})
+        def initialize(request, current_host, options = {})
           super()
           @request = request
+          @current_host = current_host
           @headers = {}
           @options = options
           # "For non-authenticated or anonymous requests. A NotImplemented error result code will be returned if 
@@ -210,7 +211,7 @@ module AWS
           end
           
           def only_path
-            ("/" + request['Host'].gsub("#{DEFAULT_HOST}","").gsub(/\.$/,'') + request.path[/^[^?]*/]).gsub("//","/")
+            (current_host.nil? ? '' : "/#{current_host}") << request.path[/^[^?]*/]
           end
       end
     end

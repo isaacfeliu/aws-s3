@@ -44,7 +44,7 @@ module AWS
         def error?
           !success? && response['content-type'] == 'application/xml' && parsed.root == 'error'
         end
-    
+
         def error
           Error.new(parsed, self)
         end

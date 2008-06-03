@@ -295,6 +295,7 @@ module AWS
             options.replace(bucket)
             bucket = nil
           end
+          self.current_host = bucket_name(bucket)
           "/#{name}"
         end
     

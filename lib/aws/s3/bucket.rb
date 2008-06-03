@@ -72,12 +72,37 @@ module AWS
         #
         #   Bucket.create('internet_drop_box', :access => :public_read_write)
         #
+        # By default new buckets will be created in US. You can override this using the <tt>:location</tt> option.
+        #
+        #   Bucket.create('internet_drop_box', :location => :eu)
+        #
         # The full list of access levels that you can set on Bucket and S3Object creation are listed in the README[link:files/README.html] 
         # in the section called 'Setting access levels'.
         def create(name, options = {})
           validate_name!(name)
-          put("/#{name}", options).success?
+          self.current_host = name
+
+          put("/", options, BucketConfiguration.new(options[:location]).to_s).success?
         end
+        
+        class BucketConfiguration < XmlGenerator
+          attr_reader :location
+          
+          def initialize(location)
+            @location = location
+            super()
+          end
+          
+          def build
+            return nil unless location == :eu
+            
+            xml.tag!('CreateBucketConfiguration') do
+              xml.LocationConstraint 'EU'
+            end
+          end
+          
+        end
+        
         
         # Fetches the bucket named <tt>name</tt>. 
         #
@@ -166,6 +191,7 @@ module AWS
         
         # List all your buckets. This is a convenient wrapper around AWS::S3::Service.buckets.
         def list(reload = false)
+          self.current_host = nil
           Service.buckets(reload)
         end
         
@@ -179,7 +205,8 @@ module AWS
               options = name
               name    = nil
             end
-            "/#{bucket_name(name)}#{RequestOptions.process(options).to_query_string}"
+            self.current_host = bucket_name(name)
+            "/#{RequestOptions.process(options).to_query_string}"
           end
       end
       
