@@ -1,5 +1,5 @@
 This Fork is to provide support to European Buckets of Amazon S3, which changes concepts like the "Host" header (from s3.amazonaws.com to bucket_name.amazonaws.com)
-With this fork, you can connect to US Buckets as well as EU Buckets.
+With this fork, you can connect to/create US Buckets as well as EU Buckets.
 
 = AWS::S3
 
@@ -66,6 +66,9 @@ Buckets are containers for objects (the files you store on S3). To create a new 
   # Pick a unique name, or else you'll get an error 
   # if the name is already taken.
   Bucket.create('jukebox')
+  
+  # To create an European bucket.
+  Bucket.create('jukebox', :location => :eu)
 
 Bucket names must be unique across the entire S3 system, sort of like domain names across the internet. If you try
 to create a bucket with a name that is already taken, you will get an error.
