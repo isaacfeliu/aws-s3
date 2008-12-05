@@ -77,23 +77,23 @@ class ConnectionTest < Test::Unit::TestCase
 
   def test_url_for_uses_default_protocol_server_and_port
     connection = Connection.new(:access_key_id => '123', :secret_access_key => 'abc', :port => 80)
-    assert_match %r(^http://s3\.amazonaws\.com/foo\?), connection.url_for('/foo')
+    assert_match %r(^http://s3\.amazonaws\.com/foo\?), connection.url_for('/foo', 'mybucket')
 
     connection = Connection.new(:access_key_id => '123', :secret_access_key => 'abc', :use_ssl => true, :port => 443)
-    assert_match %r(^https://s3\.amazonaws\.com/foo\?), connection.url_for('/foo')
+    assert_match %r(^https://s3\.amazonaws\.com/foo\?), connection.url_for('/foo', 'mybucket')
   end
 
   def test_url_for_remembers_custom_protocol_server_and_port
     connection = Connection.new(:access_key_id => '123', :secret_access_key => 'abc', :server => 'example.org', :port => 555, :use_ssl => true)
-    assert_match %r(^https://example\.org:555/foo\?), connection.url_for('/foo')
+    assert_match %r(^https://example\.org:555/foo\?), connection.url_for('/foo', 'mybucket')
   end
 
   def test_url_for_with_and_without_authenticated_urls
     connection = Connection.new(:access_key_id => '123', :secret_access_key => 'abc', :server => 'example.org')
     authenticated = lambda {|url| url['?AWSAccessKeyId']}
-    assert authenticated[connection.url_for('/foo')]
-    assert authenticated[connection.url_for('/foo', :authenticated => true)]
-    assert !authenticated[connection.url_for('/foo', :authenticated => false)]
+    assert authenticated[connection.url_for('/foo', 'mybucket')]
+    assert authenticated[connection.url_for('/foo', 'mybucket', :authenticated => true)]
+    assert !authenticated[connection.url_for('/foo', 'mybucket', :authenticated => false)]
   end
   
   def test_connecting_through_a_proxy

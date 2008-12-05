@@ -56,13 +56,13 @@ module AWS
         attempts == 3 ? raise : (attempts += 1; retry)
       end
       
-      def url_for(path, options = {})
+      def url_for(path, current_host, options = {})
         authenticate = options.delete(:authenticated)
         # Default to true unless explicitly false
         authenticate = true if authenticate.nil? 
         path         = self.class.prepare_path(path)
         request      = request_method(:get).new(path, {})
-        query_string = query_string_authentication(request, options)
+        query_string = query_string_authentication(request, current_host, options)
         returning "#{protocol(options)}#{http.address}#{port_string}#{path}" do |url|
           url << "?#{query_string}" if authenticate
         end
@@ -132,8 +132,8 @@ module AWS
           request['Host'] = (host && http.address.match(host)) ? http.address : host.nil? ? http.address : host.match(/amazonaws.com/) ? host : "#{host}.#{http.address}"
         end
         
-        def query_string_authentication(request, options = {})
-          Authentication::QueryString.new(request, access_key_id, secret_access_key, options)
+        def query_string_authentication(request, current_host, options = {})
+          Authentication::QueryString.new(request, access_key_id, secret_access_key, current_host, options)
         end
 
         def request_method(verb)
