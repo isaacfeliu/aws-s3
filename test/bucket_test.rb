@@ -42,7 +42,7 @@ class BucketTest < Test::Unit::TestCase
   end
   
   def test_bucket_path
-    assert_equal '/bucket_name?max-keys=2', Bucket.send(:path, 'bucket_name', :max_keys => 2)
-    assert_equal '/bucket_name', Bucket.send(:path, 'bucket_name', {})    
+    assert_equal '/?max-keys=2', Bucket.send(:path, 'bucket_name', :max_keys => 2)
+    assert_equal '/', Bucket.send(:path, 'bucket_name', {})    
   end
 end

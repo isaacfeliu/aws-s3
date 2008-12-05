@@ -11,13 +11,17 @@ module AmazonDocExampleData
     module_function
     
       def request
-        request = Net::HTTP::Put.new('/quotes/nelson')
+        request = Net::HTTP::Put.new('/nelson')
         request['Content-Md5']       = 'c8fdb181845a4ca6b8fec737b3581d76'
         request['Content-Type']      = 'text/html'
         request['Date']              = 'Thu, 17 Nov 2005 18:49:58 GMT'
         request['X-Amz-Meta-Author'] = 'foo@bar.com'
         request['X-Amz-Magic']       = 'abracadabra'
         request
+      end
+      
+      def current_host
+        "quotes"
       end
   
       def canonical_string
@@ -45,11 +49,15 @@ module AmazonDocExampleData
     module_function
     
       def request
-        request = Net::HTTP::Get.new('/quotes/nelson')
+        request = Net::HTTP::Get.new('/nelson')
         request['Date'] = date
         request
       end
       
+      def current_host
+        "quotes"
+      end
+
       def date
         'Thu Mar  9 01:24:20 CST 2006'
       end
