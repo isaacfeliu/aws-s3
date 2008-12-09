@@ -63,7 +63,7 @@ module AWS
         path         = self.class.prepare_path(path)
         request      = request_method(:get).new(path, {})
         query_string = query_string_authentication(request, current_host, options)
-        returning "#{protocol(options)}#{http.address}#{port_string}#{path}" do |url|
+        returning "#{protocol(options)}#{get_host(current_host)}#{port_string}#{path}" do |url|
           url << "?#{query_string}" if authenticate
         end
       end
@@ -129,7 +129,11 @@ module AWS
         end
         
         def set_host!(request, host)
-          request['Host'] = (host && http.address.match(host)) ? http.address : host.nil? ? http.address : host.match(/amazonaws.com/) ? host : "#{host}.#{http.address}"
+          request['Host'] = get_host(host)
+        end
+        
+        def get_host(host)
+          (host && http.address.match(host)) ? http.address : host.nil? ? http.address : host.match(/amazonaws.com/) ? host : "#{host}.#{http.address}"
         end
         
         def query_string_authentication(request, current_host, options = {})
